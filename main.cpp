@@ -14,7 +14,7 @@ int main(int argc, char **argv) {
 
     // Initialize the Chip8 system and load the game into the memory
     myChip8.initialise();
-    // myChip8.loadProgram("pong");
+    myChip8.loadProgram(std::filesystem::path("chip8_ref/GAMES/PONG"));
 
     // myChip8.getCurrentState();
     myChip8.dumpMemory();

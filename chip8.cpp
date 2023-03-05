@@ -1,4 +1,10 @@
+#include <algorithm>
+#include <filesystem>
+#include <fstream>
+#include <iterator>
 #include <iostream>
+
+#include <vector>
 
 #include "chip8.h"
 
@@ -21,9 +27,12 @@ void chip8::initialise() {
     // clear memory
     for (int i = 0; i < 4096; ++i) { memory[i] = 0x00; }
 
+    // clear keys
+    for (int i = 0; i < 16; ++i) { key[i] = 0x00; }
+
     // load fontset
+    unsigned char buffer = 0x50;
     for (int i = 0; i < 80; ++i) {
-        unsigned char buffer = 0x50;
         memory[buffer + i] = chip8_fontset[i];
     }
 
@@ -32,8 +41,48 @@ void chip8::initialise() {
     soundTimer = 0;
 }
 
-void chip8::loadProgram(std::string pathName) {
-    std::cout << pathName << std::endl;
+void chip8::loadProgram(std::filesystem::path pathName) {
+    std::cout << "loading program" << std::endl;
+    if (!std::filesystem::exists(pathName)) {
+        std::cout << "file doesn't exist" << std::endl;
+        return;
+    }
+
+    std::ifstream file(pathName, std::ios::binary);
+
+    if (!file.is_open()) {
+        std::cout << "Unable to open file" << std::endl;
+        return;
+    }
+
+    std::istream_iterator<unsigned char> begin(file), end;
+    std::vector<unsigned char> buffer(begin, end);
+
+    std::ofstream myFile("data.bin", std::ios::out | std::ios::binary);
+    
+    int romStartAddress = 512;
+    for (int i : buffer) {
+        memory[romStartAddress + i] = buffer[i];
+        // delete
+        char ch = (char)buffer[i];
+        myFile.write(&ch,1);
+    }
+
+    // std::copy(
+    //     buffer.begin(),
+    //     buffer.end(),
+    //     std::ostream_iterator<unsigned char>(std::cout, ",")
+    // );
+
+    // std::vector<unsigned char> blocks;
+    // std::cout << sizeof(blocks);
+    // std::cout << "file contents are in memory" << std::endl;
+    // for(int i = 0; i < sizeof(blocks); ++i) {
+    //     // printf("%.16X\n", blocks[i]);
+    //     std::cout << std::hex <<  blocks[i];
+    // }
+
+    std::cout << "loaded program" << std::endl;
 }
 
 void chip8::emulateCycle() {
@@ -61,7 +110,7 @@ void chip8::getCurrentState() {
 
 void chip8::dumpMemory() {
     std::cout << "memory: " << std::endl;
-    for (int i = 0; i < 4096; ++i) {
+    for (int i = 0; i < 1024; ++i) {
         printf("%.4X : ", i);
         printf("%.4X\n", memory[i]);
     }

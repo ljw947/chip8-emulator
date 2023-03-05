@@ -1,4 +1,5 @@
-#include <string>
+#include <filesystem>
+#include <vector>
 
 class chip8 {
 private:
@@ -36,9 +37,12 @@ private:
     unsigned short stack[16];
     unsigned short sp;
 
+    // current state of keys
+    unsigned char key[16];
+
 public:
     void initialise();
-    void loadProgram(std::string pathName);
+    void loadProgram(std::filesystem::path pathName);
     void emulateCycle();
     void setKeys();
 
