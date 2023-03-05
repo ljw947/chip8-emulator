@@ -77,13 +77,46 @@ void chip8::loadProgram(std::filesystem::path pathName) {
 
 void chip8::emulateCycle() {
     std::cout << "emulating cycle " << cycleCount << std::endl;
+
     // fetch opcode
-    // decode opcode
-    // execute opcode
+    opcode = memory[pc] << 8 | memory[pc + 1];
+
+    // decode, execute opcode by looking at first 4 bits
+    switch(opcode & 0xF000) {
+        // first 4 bits aren't clear enough in this instance
+        case 0x0000:
+            switch(opcode & 0x000F) {
+                // 0x00E0: clear screen
+                case 0x0000:
+                    break;
+                // 0x000EE: return from subroutine
+                case 0x000E:
+                    break;
+                default:
+                    printf("Unknown opcode: 0x%X\n", opcode);
+            }
+
+        // ANNN: set I to address NNN
+        case 0xA000:
+            printf("Got opcode: 0x%X\n", opcode);
+            I = opcode & 0x0FFF;
+            pc += 2;
+            break;
+
+        // more opcodes
+
+        default:
+            printf("Unknown opcode: 0x%X\n", opcode);
+    }
 
     // update timers
+    if (delayTimer > 0) { --delayTimer; }
+    if (soundTimer > 0) {
+        if (soundTimer == 1) { std::cout << "beep" << std::endl; }
+        --soundTimer;
+    }
 
-    // sleep(1);
+    sleep(1);
     ++cycleCount;
 }
 
