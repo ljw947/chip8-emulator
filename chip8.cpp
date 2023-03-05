@@ -3,10 +3,11 @@
 #include <fstream>
 #include <iterator>
 #include <iostream>
-
 #include <vector>
 
 #include "chip8.h"
+
+typedef unsigned char byte;
 
 // initialise registers and memory once
 void chip8::initialise() {
@@ -43,6 +44,7 @@ void chip8::initialise() {
 
 void chip8::loadProgram(std::filesystem::path pathName) {
     std::cout << "loading program" << std::endl;
+
     if (!std::filesystem::exists(pathName)) {
         std::cout << "file doesn't exist" << std::endl;
         return;
@@ -55,32 +57,15 @@ void chip8::loadProgram(std::filesystem::path pathName) {
         return;
     }
 
-    std::istream_iterator<unsigned char> begin(file), end;
-    std::vector<unsigned char> buffer(begin, end);
+    std::vector<byte> buffer(
+        (std::istreambuf_iterator<char>(file)),
+         std::istreambuf_iterator<char>()
+    );
 
-    std::ofstream myFile("data.bin", std::ios::out | std::ios::binary);
-    
     int romStartAddress = 512;
-    for (int i : buffer) {
+    for (int i = 0; i < buffer.size(); ++i) {
         memory[romStartAddress + i] = buffer[i];
-        // delete
-        char ch = (char)buffer[i];
-        myFile.write(&ch,1);
     }
-
-    // std::copy(
-    //     buffer.begin(),
-    //     buffer.end(),
-    //     std::ostream_iterator<unsigned char>(std::cout, ",")
-    // );
-
-    // std::vector<unsigned char> blocks;
-    // std::cout << sizeof(blocks);
-    // std::cout << "file contents are in memory" << std::endl;
-    // for(int i = 0; i < sizeof(blocks); ++i) {
-    //     // printf("%.16X\n", blocks[i]);
-    //     std::cout << std::hex <<  blocks[i];
-    // }
 
     std::cout << "loaded program" << std::endl;
 }
@@ -108,9 +93,9 @@ void chip8::getCurrentState() {
     for (int i = 0; i < 16; ++i) { std::cout << "stack: " << stack[i] << std::endl; }
 }
 
-void chip8::dumpMemory() {
+void chip8::dumpMemory(int startByte = 0, int stopByte = 4096) {
     std::cout << "memory: " << std::endl;
-    for (int i = 0; i < 1024; ++i) {
+    for (int i = startByte; i < stopByte; ++i) {
         printf("%.4X : ", i);
         printf("%.4X\n", memory[i]);
     }

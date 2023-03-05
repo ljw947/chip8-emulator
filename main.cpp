@@ -17,7 +17,7 @@ int main(int argc, char **argv) {
     myChip8.loadProgram(std::filesystem::path("chip8_ref/GAMES/PONG"));
 
     // myChip8.getCurrentState();
-    myChip8.dumpMemory();
+    // myChip8.dumpMemory();
 
     // Emulation loop
     // for(;;) {

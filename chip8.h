@@ -47,7 +47,8 @@ public:
     void setKeys();
 
     void getCurrentState();
-    void dumpMemory();
+    void dumpMemory(int startByte, int stopByte);
+    void dumpMemoryToFile(int startByte, int stopByte);
 
     unsigned char chip8_fontset[80] = {
         0xF0, 0x90, 0x90, 0x90, 0xF0, // 0
