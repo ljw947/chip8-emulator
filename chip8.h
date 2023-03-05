@@ -1,9 +1,12 @@
+#pragma once
+
 #include <filesystem>
 #include <vector>
 
 class chip8 {
 private:
-    // opcodes are 2 bytes, big-endian
+    int cycleCount;
+    // opcodes are 2 bytes, big-endian (MSB)
     unsigned short opcode;
 
     // 0x000-0x1FF - Chip 8 interpreter (contains font set in emu)

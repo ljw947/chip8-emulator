@@ -5,6 +5,8 @@
 #include <iostream>
 #include <vector>
 
+#include <unistd.h>  // for sleep
+
 #include "chip8.h"
 
 typedef unsigned char byte;
@@ -40,6 +42,9 @@ void chip8::initialise() {
     // reset timers
     delayTimer = 0;
     soundTimer = 0;
+
+    // so I don't go crazy
+    cycleCount = 0;
 }
 
 void chip8::loadProgram(std::filesystem::path pathName) {
@@ -71,12 +76,15 @@ void chip8::loadProgram(std::filesystem::path pathName) {
 }
 
 void chip8::emulateCycle() {
-    std::cout << "emulating cycle" << std::endl;
+    std::cout << "emulating cycle " << cycleCount << std::endl;
     // fetch opcode
     // decode opcode
     // execute opcode
 
     // update timers
+
+    // sleep(1);
+    ++cycleCount;
 }
 
 void chip8::getCurrentState() {

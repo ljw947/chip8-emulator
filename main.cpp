@@ -20,9 +20,9 @@ int main(int argc, char **argv) {
     // myChip8.dumpMemory();
 
     // Emulation loop
-    // for(;;) {
+    for(;;) {
         // Emulate one cycle
-        // myChip8.emulateCycle();
+        myChip8.emulateCycle();
 
     //     // If the draw flag is set, update the screen
     //     // if(myChip8.drawFlag)
@@ -30,7 +30,7 @@ int main(int argc, char **argv) {
 
     //     // Store key press state (Press and Release)
     //     // myChip8.setKeys();
-    // }
+    }
 
     std::cout << "returning" << std::endl;
     return 0;
