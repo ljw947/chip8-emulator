@@ -21,7 +21,7 @@ private:
     // - the carry flag in addition
     // - the no borrow flag in subtraction
     // - set upon pixel collision during draw
-    unsigned char registers[16];
+    unsigned char V[16];
 
     unsigned short I;  // address register, 12 bits
     unsigned short pc;  // program counter
@@ -44,15 +44,23 @@ private:
     unsigned char key[16];
 
 public:
+    // initialise all registers and memory locations
     void initialise();
+    // load contents of pathName into memory
     void loadProgram(std::filesystem::path pathName);
+    // fetch, decode, execute opcode; update timers
     void emulateCycle();
+    // get current state of key presses
     void setKeys();
 
+    // dumps values of all private member variables except memory
     void getCurrentState();
+    // dumps contents of memory
     void dumpMemory(int startByte, int stopByte);
+    // dumps contents of memory to a file
     void dumpMemoryToFile(int startByte, int stopByte);
 
+    // the 'official' fontset of chip8
     unsigned char chip8_fontset[80] = {
         0xF0, 0x90, 0x90, 0x90, 0xF0, // 0
         0x20, 0x60, 0x20, 0x20, 0x70, // 1

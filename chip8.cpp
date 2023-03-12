@@ -11,7 +11,6 @@
 
 typedef unsigned char byte;
 
-// initialise registers and memory once
 void chip8::initialise() {
     std::cout << "initialising" << std::endl;
     pc = 0x200;  // prior bytes reserved
@@ -25,7 +24,7 @@ void chip8::initialise() {
     for (int i = 0; i < 16; ++i) { stack[i] = 0x00; }
 
     // clear registers
-    for (int i = 0; i < 16; ++i) { registers[i] = 0x00; }
+    for (int i = 0; i < 16; ++i) { V[i] = 0x00; }
 
     // clear memory
     for (int i = 0; i < 4096; ++i) { memory[i] = 0x00; }
@@ -103,7 +102,11 @@ void chip8::emulateCycle() {
             pc += 2;
             break;
 
-        // more opcodes
+        case 0x6000:
+            printf("Got opcode: 0x%X\n", opcode);
+            V[9] = 2;
+            pc += 2;
+            break;
 
         default:
             printf("Unknown opcode: 0x%X\n", opcode);
@@ -129,7 +132,7 @@ void chip8::getCurrentState() {
     std::cout << "soundTimer: " << soundTimer << std::endl;
     std::cout << "sp: " << sp << std::endl;
 
-    for (int i = 0; i < 16; ++i) { std::cout << "registers: " << registers[i] << std::endl; }
+    for (int i = 0; i < 16; ++i) { std::cout << "registers: " << V[i] << std::endl; }
 
     for (int i = 0; i < 16; ++i) { std::cout << "stack: " << stack[i] << std::endl; }
 }
