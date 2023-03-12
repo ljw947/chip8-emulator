@@ -25,6 +25,7 @@ int main(int argc, char **argv)
     {
         // Emulate one cycle
         myChip8.emulateCycle();
+        // myChip8.getCurrentState();
 
     //     // If the draw flag is set, update the screen
     //     // if(myChip8.drawFlag)

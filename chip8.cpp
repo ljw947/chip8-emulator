@@ -86,6 +86,7 @@ void chip8::emulateCycle()
 
     // fetch opcode
     opcode = memory[pc] << 8 | memory[pc + 1];
+    printf("Got opcode: 0x%X\n", opcode);
 
     // decode, execute opcode by looking at first 4 bits (e.g. the X in 0xX)
     switch(opcode & 0xF000)
@@ -106,25 +107,14 @@ void chip8::emulateCycle()
 
         // ANNN: set I to address NNN
         case 0xA000:
-        {
-            printf("Got opcode: 0x%X\n", opcode);
             I = opcode & 0x0FFF;
             pc += 2;
-            break;
-        }
+        break;
 
         case 0x6000:
-        {
-            printf("Got opcode: 0x%X\n", opcode);
-            int registerToAlter = opcode & 0x0F00;
-            registerToAlter = registerToAlter >> 8;
-            int value = opcode & 0x00F0;
-            value = value >> 4;
-            std::cout << "Adding value " << value << " to register " << registerToAlter << std::endl;
-            V[registerToAlter] = value;
+            V[(opcode & 0x0F00) >> 8] = opcode & 0x00FF;
             pc += 2;
-            break;
-        }
+        break;
 
         default:
             printf("Unknown opcode: 0x%X\n", opcode);
@@ -144,7 +134,7 @@ void chip8::emulateCycle()
 
 void chip8::getCurrentState()
 {
-    std::cout << "opcode: " << opcode << std::endl;
+    printf("opcode: 0x%X\n", opcode);
     std::cout << "I: " << I << std::endl;
     std::cout << "pc: " << pc << std::endl;
     std::cout << "gfx: " << gfx << std::endl;
@@ -152,7 +142,11 @@ void chip8::getCurrentState()
     std::cout << "soundTimer: " << soundTimer << std::endl;
     std::cout << "sp: " << sp << std::endl;
 
-    for (int i = 0; i < 16; ++i) { std::cout << "registers: " << V[i] << std::endl; }
+    std::cout << "registers:" << std::endl;
+    for (int i = 0; i < 16; ++i)
+    {
+        printf("register %i: %i\n", i, V[i]);
+    }
 
     for (int i = 0; i < 16; ++i) { std::cout << "stack: " << stack[i] << std::endl; }
 }
