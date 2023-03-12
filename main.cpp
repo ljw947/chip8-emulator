@@ -6,7 +6,8 @@
 
 chip8 myChip8;
 
-int main(int argc, char **argv) {
+int main(int argc, char **argv)
+{
     std::cout << "entering main" << std::endl;
     // Set up render system and register input callbacks
     // setupGraphics();
@@ -20,7 +21,8 @@ int main(int argc, char **argv) {
     // myChip8.dumpMemory();
 
     // Emulation loop
-    for(;;) {
+    for(;;)
+    {
         // Emulate one cycle
         myChip8.emulateCycle();
 

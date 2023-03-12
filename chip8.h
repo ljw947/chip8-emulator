@@ -61,7 +61,8 @@ public:
     void dumpMemoryToFile(int startByte, int stopByte);
 
     // the 'official' fontset of chip8
-    unsigned char chip8_fontset[80] = {
+    unsigned char chip8_fontset[80] =
+    {
         0xF0, 0x90, 0x90, 0x90, 0xF0, // 0
         0x20, 0x60, 0x20, 0x20, 0x70, // 1
         0xF0, 0x10, 0xF0, 0x80, 0xF0, // 2
