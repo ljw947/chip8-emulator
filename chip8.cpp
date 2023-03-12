@@ -107,14 +107,32 @@ void chip8::emulateCycle()
 
         // ANNN: set I to address NNN
         case 0xA000:
+        {
             I = opcode & 0x0FFF;
             pc += 2;
-        break;
+            break;
+        }
 
+        // DXYN: Draw sprite at Vx, Vy with width 8 pixels, height N pixels.
+        // Pixel set using bitwise XOR - current state compared w/ value in memory, if different 1 else 0
+        case 0xD000:
+        {
+            int xcoord = (opcode & 0x0F00) >> 8;
+            int ycoord = (opcode & 0x00F0) >> 4;
+            int height = (opcode & 0x000F);
+            printf("x coord: %i, y coord: %i, height: %i\n", xcoord, ycoord, height);
+
+            pc += 2;
+            break;
+        }
+
+        // 6XNN: set VX to NN
         case 0x6000:
+        {
             V[(opcode & 0x0F00) >> 8] = opcode & 0x00FF;
             pc += 2;
-        break;
+            break;
+        }
 
         default:
             printf("Unknown opcode: 0x%X\n", opcode);
