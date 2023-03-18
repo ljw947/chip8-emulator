@@ -421,8 +421,11 @@ void chip8::emulateCycle()
                 //       Offset from I increased by 1 each time, I left unchanged
                 case 0x0055:
                 {
-                    printf("Not yet implemented: 0x%X\n", opcode);
-                    pc += 2;  // TODO: check if needed
+                    for (int x = 0; x <= (opcode & 0x0F00) >> 8; ++x)
+                    {
+                        memory[I + x] = V[x];
+                    }
+                    pc += 2;
                     break;
                 }
 
@@ -430,8 +433,11 @@ void chip8::emulateCycle()
                 //       Offset from I increased by 1 each time, I left unchanged
                 case 0x0065:
                 {
-                    printf("Not yet implemented: 0x%X\n", opcode);
-                    pc += 2;  // TODO: check if needed
+                    for (int x = 0; x <= (opcode & 0x0F00) >> 8; ++x)
+                    {
+                        V[x] = memory[I + x];
+                    }
+                    pc += 2;
                     break;
                 }
 

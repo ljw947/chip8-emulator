@@ -1,3 +1,4 @@
+#include <cstring>
 #include <iostream>
 
 #include <unistd.h>  // for sleep
@@ -9,15 +10,38 @@
 
 chip8 myChip8;
 
-int main(int argc, char **argv)
+std::string filePath;
+
+void showHelpAndExit()
+{
+    std::cout << "chip8 emulator" << std::endl;
+    std::cout << "-p / --path      path to file" << std::endl;
+    std::cout << "-h / --help      show this help message" << std::endl;
+    exit(0);
+}
+
+void parseArgs(int argc, char* argv[])
+{
+    if (argc < 2) { showHelpAndExit(); }
+
+    for (int i = 0; i < argc; ++i)
+    {
+        if (std::strcmp(argv[i], "--help") | std::strcmp(argv[i], "--h")) { showHelpAndExit(); }
+        if (std::strcmp(argv[i], "--path") | std::strcmp(argv[i], "--p")) { filePath = argv[i + 1]; }
+    }
+}
+
+int main(int argc, char* argv[])
 {
     // Set up render system and register input callbacks
     // setupGraphics();
     // setupInput();
 
+    parseArgs(argc, argv);
+
     // Initialize the Chip8 system and load the game into the memory
     myChip8.initialise();
-    bool programLoaded = myChip8.loadProgram(std::filesystem::path("chip8_ref/GAMES/PONG"));
+    bool programLoaded = myChip8.loadProgram(std::filesystem::path(filePath));
 
     if (!programLoaded)
     {
