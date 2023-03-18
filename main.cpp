@@ -3,6 +3,7 @@
 // #include graphics / input
 
 #include "chip8.h"
+#include "graphics.h"
 
 chip8 myChip8;
 
@@ -25,11 +26,13 @@ int main(int argc, char **argv)
     {
         // Emulate one cycle
         myChip8.emulateCycle();
-        // myChip8.getCurrentState();
 
-    //     // If the draw flag is set, update the screen
-    //     // if(myChip8.drawFlag)
-    //     //     drawGraphics();
+        // only draw when needed
+        if (myChip8.drawFlag)
+        {
+            printScreen(myChip8.getGfx());
+            myChip8.drawFlag = false;
+        }
 
     //     // Store key press state (Press and Release)
     //     // myChip8.setKeys();

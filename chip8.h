@@ -62,6 +62,11 @@ public:
     // print contents of gfx (rudimentary print screen)
     void printScreen();
 
+    // return the gfx array for drawing
+    unsigned char* getGfx();
+
+    bool drawFlag;
+
     // the 'official' fontset of chip8
     unsigned char chip8_fontset[80] =
     {
