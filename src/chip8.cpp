@@ -57,14 +57,14 @@ bool chip8::loadProgram(std::filesystem::path pathName)
 
     if (!std::filesystem::exists(pathName))
     {
-        throw std::filesystem::filesystem_error("File not found.");
+        return false;
     }
 
     std::ifstream file(pathName, std::ios::binary);
 
     if (!file.is_open())
     {
-        throw std::filesystem::filesystem_error("Unable to open file.");
+        return false;
     }
 
     // TODO: build a size check for file
