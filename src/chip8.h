@@ -49,7 +49,7 @@ public:
     // initialise all registers and memory locations
     void initialise();
     // load contents of pathName into memory
-    void loadProgram(std::filesystem::path pathName);
+    bool loadProgram(std::filesystem::path pathName);
     // fetch, decode, execute opcode; update timers
     void emulateCycle();
     // get current state of key presses

@@ -51,23 +51,23 @@ void chip8::initialise()
     cycleCount = 0;
 }
 
-void chip8::loadProgram(std::filesystem::path pathName)
+bool chip8::loadProgram(std::filesystem::path pathName)
 {
     std::cout << "loading program" << std::endl;
 
     if (!std::filesystem::exists(pathName))
     {
-        std::cout << "file doesn't exist" << std::endl;
-        return;
+        throw std::filesystem::filesystem_error("File not found.");
     }
 
     std::ifstream file(pathName, std::ios::binary);
 
     if (!file.is_open())
     {
-        std::cout << "Unable to open file" << std::endl;
-        return;
+        throw std::filesystem::filesystem_error("Unable to open file.");
     }
+
+    // TODO: build a size check for file
 
     std::vector<byte> buffer(
         (std::istreambuf_iterator<char>(file)),
@@ -83,6 +83,7 @@ void chip8::loadProgram(std::filesystem::path pathName)
     programSize = buffer.size();
 
     std::cout << "loaded program" << std::endl;
+    return true;
 }
 
 void chip8::emulateCycle()

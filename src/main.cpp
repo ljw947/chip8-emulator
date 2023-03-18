@@ -17,7 +17,15 @@ int main(int argc, char **argv)
 
     // Initialize the Chip8 system and load the game into the memory
     myChip8.initialise();
-    myChip8.loadProgram(std::filesystem::path("chip8_ref/GAMES/PONG"));
+    try
+    {
+        myChip8.loadProgram(std::filesystem::path("chip8_ref/GAMES/PONG"));
+    }
+    catch (const std::exception& error)
+    {
+        std::cout << "Got error " << e.what() << ", exiting." << std::endl;
+        exit(1);
+    }
 
     // myChip8.getCurrentState();
     // myChip8.dumpMemory();
