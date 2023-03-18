@@ -18,9 +18,11 @@ void chip8::initialise()
     opcode = 0;
     I = 0;
     sp = 0;
+    programSize = 0;
 
     // clear display call
     drawFlag = false;
+    clearGfx();
 
     // clear stack
     for (int i = 0; i < 16; ++i) { stack[i] = 0x00; }
@@ -78,6 +80,8 @@ void chip8::loadProgram(std::filesystem::path pathName)
         memory[romStartAddress + i] = buffer[i];
     }
 
+    programSize = buffer.size();
+
     std::cout << "loaded program" << std::endl;
 }
 
@@ -94,13 +98,14 @@ void chip8::emulateCycle()
     {
         // first 4 bits aren't clear enough in this instance
         case 0x0000:
+        {
             switch(opcode & 0x000F)
             {
                 // 0x00E0: clear screen
                 case 0x0000:
                 {
-                    printf("Not yet implemented: 0x%X\n", opcode);
-                    pc += 2;  // TODO: check if needed
+                    clearGfx();
+                    pc += 2;
                     break;
                 }
                 // 0x00EE: return from subroutine
@@ -111,46 +116,55 @@ void chip8::emulateCycle()
                     break;
                 }
                 default:
-                    printf("Unknown opcode: 0x%X\n", opcode);
+                    printf("Unknown opcode [0x0000]: 0x%X\n", opcode);
+                    break;
             }
+            break;
+        }
 
         // 1NNN: go to address NNN
         case 0x1000:
         {
-            printf("Not yet implemented: 0x%X\n", opcode);
-            pc += 2;  // TODO: check if needed
+            pc = opcode & 0x0FFF;
             break;
         }
 
         // 2NNN: run subroutine at NNN
         case 0x2000:
         {
-            printf("Not yet implemented: 0x%X\n", opcode);
-            pc += 2;  // TODO: check if needed
+            stack[sp] = pc;
+            ++sp;
+            pc = opcode & 0x0FFF;
             break;
         }
 
         // 3XNN: skip next instruction if VX == NN
         case 0x3000:
         {
-            printf("Not yet implemented: 0x%X\n", opcode);
-            pc += 2;  // TODO: check if needed
+            if (V[(opcode & 0x0F00) >> 8] == opcode & 0x00FF)
+            {
+                pc += 2;
+            }
             break;
         }
 
         // 4XNN: skip next instruction if VX != NN
         case 0x4000:
         {
-            printf("Not yet implemented: 0x%X\n", opcode);
-            pc += 2;  // TODO: check if needed
+            if (V[(opcode & 0x0F00) >> 8] != opcode & 0x00FF)
+            {
+                pc += 2;
+            }
             break;
         }
 
         // 5XY0: skip next instruction if VX == VY
         case 0x5000:
         {
-            printf("Not yet implemented: 0x%X\n", opcode);
-            pc += 2;  // TODO: check if needed
+            if (V[(opcode & 0x0F00) >> 8] == V[(opcode & 0x00F0) >> 4])
+            {
+                pc += 2;
+            }
             break;
         }
 
@@ -165,8 +179,8 @@ void chip8::emulateCycle()
         // 7XNN: add NN to VX (carry flag unchanged)
         case 0x7000:
         {
-            printf("Not yet implemented: 0x%X\n", opcode);
-            pc += 2;  // TODO: check if needed
+            V[(opcode & 0x0F00) >> 8] += opcode & 0x00FF;
+            pc += 2;
             break;
         }
 
@@ -177,29 +191,29 @@ void chip8::emulateCycle()
                 // 8XY0: set VX to value of VY
                 case 0x0000:
                 {
-                    printf("Not yet implemented: 0x%X\n", opcode);
-                    pc += 2;  // TODO: check if needed
+                    V[(opcode & 0x0F00) >> 8] = V[(opcode & 0x00F0) >> 4];
+                    pc += 2;
                     break;
                 }
                 // 8XY1: set VX to VX OR VY (bitwise OR)
                 case 0x0001:
                 {
-                    printf("Not yet implemented: 0x%X\n", opcode);
-                    pc += 2;  // TODO: check if needed
+                    V[(opcode & 0x0F00) >> 8] == (V[(opcode & 0x0F00) >> 8] | V[(opcode & 0x00F0) >> 4]);
+                    pc += 2;
                     break;
                 }
                 // 8XY2: set VX to VX AND VY (bitwise AND)
                 case 0x0002:
                 {
-                    printf("Not yet implemented: 0x%X\n", opcode);
-                    pc += 2;  // TODO: check if needed
+                    V[(opcode & 0x0F00) >> 8] = (V[(opcode & 0x0F00) >> 8] & V[(opcode & 0x00F0) >> 4]);
+                    pc += 2;
                     break;
                 }
                 // 8XY3: set VX to VX XOR VY (bitwise XOR)
                 case 0x0003:
                 {
-                    printf("Not yet implemented: 0x%X\n", opcode);
-                    pc += 2;  // TODO: check if needed
+                    V[(opcode & 0x0F00) >> 8] = (V[(opcode & 0x0F00) >> 8] ^ V[(opcode & 0x00F0) >> 4]);
+                    pc += 2;
                     break;
                 }
                 // 8XY4: add VY to VX. VF set to 1 when carrying, otherwise 0
@@ -240,14 +254,18 @@ void chip8::emulateCycle()
 
                 default:
                     printf("Unknown opcode: 0x%X\n", opcode);
+                    break;
             }
+            break;
         }
 
         // 9XY0: skip next instruction if VX != VY
         case 0x9000:
         {
-            printf("Not yet implemented: 0x%X\n", opcode);
-            pc += 2;  // TODO: check if needed
+            if (V[(opcode & 0x0F00) >> 8] != V[(opcode & 0x00F0) >> 4])
+            {
+                pc += 2;
+            }
             break;
         }
 
@@ -262,16 +280,19 @@ void chip8::emulateCycle()
         // BNNN: jump to address NNN plus V0
         case 0xB000:
         {
-            printf("Not yet implemented: 0x%X\n", opcode);
-            pc += 2;  // TODO: check if needed
+            pc = (opcode & 0x0FFF) + V[0];  // TODO: doesn't look right
             break;
         }
 
         // CXNN: set VX to result of bitwise AND operation on random number (0 - 255) and NN
         case 0xC000:
         {
-            printf("Not yet implemented: 0x%X\n", opcode);
-            pc += 2;  // TODO: check if needed
+            std::srand((unsigned) std::time(NULL));
+            int randomNumber = 0 + (rand() % 256);
+
+            V[(opcode & 0x0F00) >> 8] = (opcode & 0x00FF) & randomNumber;
+            pc += 2;
+
             break;
         }
 
@@ -322,8 +343,9 @@ void chip8::emulateCycle()
                 }
 
                 default:
-                    printf("Unknown opcode: 0x%X\n", opcode);
+                    printf("Unknown opcode [0xE000]: 0x%X\n", opcode);
             }
+            break;
         }
 
         case 0xF000:
@@ -333,40 +355,43 @@ void chip8::emulateCycle()
                 // FX07: set VX to value of delay timer
                 case 0x0007:
                 {
-                    printf("Not yet implemented: 0x%X\n", opcode);
-                    pc += 2;  // TODO: check if needed
+                    V[(opcode & 0x0F00) >> 8] = delayTimer;
+                    pc += 2;
                     break;
                 }
 
                 // FX0A: wait for keypress then store in VX (blocking operation)
                 case 0x000A:
                 {
-                    printf("Not yet implemented: 0x%X\n", opcode);
-                    pc += 2;  // TODO: check if needed
+                    int n;
+                    std::cout << "input: ";
+                    std::cin >> n;  // TODO: tie this in with proper key inputs
+                    std::cout << n << std::endl;
+                    pc += 2;
                     break;
                 }
 
                 // FX15: set delay timer to VX
                 case 0x0015:
                 {
-                    printf("Not yet implemented: 0x%X\n", opcode);
-                    pc += 2;  // TODO: check if needed
+                    delayTimer = V[(opcode & 0x0F00) >> 8];
+                    pc += 2;
                     break;
                 }
 
                 // FX18: set sound timer to VX
                 case 0x0018:
                 {
-                    printf("Not yet implemented: 0x%X\n", opcode);
-                    pc += 2;  // TODO: check if needed
+                    soundTimer = V[(opcode & 0x0F00) >> 8];
+                    pc += 2;
                     break;
                 }
 
                 // FX1E: add VX to I. VF is unaffected
                 case 0x001E:
                 {
-                    printf("Not yet implemented: 0x%X\n", opcode);
-                    pc += 2;  // TODO: check if needed
+                    I += V[(opcode & 0x0F00) >> 8];
+                    pc += 2;
                     break;
                 }
 
@@ -384,8 +409,10 @@ void chip8::emulateCycle()
                 //       ones digit at I+2
                 case 0x0033:
                 {
-                    printf("Not yet implemented: 0x%X\n", opcode);
-                    pc += 2;  // TODO: check if needed
+                    memory[I] = (V[(opcode & 0x0F00) >> 8] / 100) % 10;  // TODO: probs check maths
+                    memory[I + 1] = (V[(opcode & 0x0F00) >> 8] / 10) % 10;
+                    memory[I + 2] = V[(opcode & 0x0F00) >> 8] % 10;
+                    pc += 2;
                     break;
                 }
 
@@ -408,8 +435,10 @@ void chip8::emulateCycle()
                 }
 
                 default:
-                    printf("Unknown opcode: 0x%X\n", opcode);
+                    printf("Unknown opcode [0xF000]: 0x%X\n", opcode);
+                    break;
             }
+            break;
         }
 
         default:
@@ -425,6 +454,11 @@ void chip8::emulateCycle()
     }
 
     ++cycleCount;
+}
+
+void chip8::clearGfx()
+{
+    for (int i = 0; i < (64 * 32); ++i) { gfx[i] = 0x00; }
 }
 
 unsigned char* chip8::getGfx() { return gfx; }

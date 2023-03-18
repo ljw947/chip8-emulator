@@ -43,6 +43,8 @@ private:
     // current state of keys
     unsigned char key[16];
 
+    int programSize;
+
 public:
     // initialise all registers and memory locations
     void initialise();
@@ -61,6 +63,8 @@ public:
     void dumpMemoryToFile(int startByte, int stopByte);
     // print contents of gfx (rudimentary print screen)
     void printScreen();
+    // clears gfx array
+    void clearGfx();
 
     // return the gfx array for drawing
     unsigned char* getGfx();

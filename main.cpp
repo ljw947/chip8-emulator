@@ -1,5 +1,7 @@
 #include <iostream>
 
+#include <unistd.h>  // for sleep
+
 // #include graphics / input
 
 #include "chip8.h"
@@ -9,7 +11,6 @@ chip8 myChip8;
 
 int main(int argc, char **argv)
 {
-    std::cout << "entering main" << std::endl;
     // Set up render system and register input callbacks
     // setupGraphics();
     // setupInput();
@@ -34,10 +35,11 @@ int main(int argc, char **argv)
             myChip8.drawFlag = false;
         }
 
-    //     // Store key press state (Press and Release)
-    //     // myChip8.setKeys();
+        // Store key press state (Press and Release)
+        // myChip8.setKeys();
+
+        sleep(1);
     }
 
-    std::cout << "returning" << std::endl;
     return 0;
 }
