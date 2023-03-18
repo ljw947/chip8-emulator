@@ -98,18 +98,171 @@ void chip8::emulateCycle()
                 // 0x00E0: clear screen
                 case 0x0000:
                     break;
-                // 0x000EE: return from subroutine
+                // 0x00EE: return from subroutine
                 case 0x000E:
                     break;
                 default:
                     printf("Unknown opcode: 0x%X\n", opcode);
             }
 
+        // 1NNN: go to address NNN
+        case 0x1000:
+        {
+            printf("Not yet implemented: 0x%X\n", opcode);
+            pc += 2;  // TODO: check if needed
+            break;
+        }
+
+        // 2NNN: run subroutine at NNN
+        case 0x2000:
+        {
+            printf("Not yet implemented: 0x%X\n", opcode);
+            pc += 2;  // TODO: check if needed
+            break;
+        }
+
+        // 3XNN: skip next instruction if VX == NN
+        case 0x3000:
+        {
+            printf("Not yet implemented: 0x%X\n", opcode);
+            pc += 2;  // TODO: check if needed
+            break;
+        }
+
+        // 4XNN: skip next instruction if VX != NN
+        case 0x4000:
+        {
+            printf("Not yet implemented: 0x%X\n", opcode);
+            pc += 2;  // TODO: check if needed
+            break;
+        }
+
+        // 5XY0: skip next instruction if VX == VY
+        case 0x5000:
+        {
+            printf("Not yet implemented: 0x%X\n", opcode);
+            pc += 2;  // TODO: check if needed
+            break;
+        }
+
+        // 6XNN: set VX to NN
+        case 0x6000:
+        {
+            V[(opcode & 0x0F00) >> 8] = opcode & 0x00FF;
+            pc += 2;
+            break;
+        }
+
+        // 7XNN: add NN to VX (carry flag unchanged)
+        case 0x7000:
+        {
+            printf("Not yet implemented: 0x%X\n", opcode);
+            pc += 2;  // TODO: check if needed
+            break;
+        }
+
+        case 0x8000:
+        {
+            switch(opcode & 0x000F)
+            {
+                // 8XY0: set VX to value of VY
+                case 0x0000:
+                {
+                    printf("Not yet implemented: 0x%X\n", opcode);
+                    pc += 2;  // TODO: check if needed
+                    break;
+                }
+                // 8XY1: set VX to VX OR VY (bitwise OR)
+                case 0x0001:
+                {
+                    printf("Not yet implemented: 0x%X\n", opcode);
+                    pc += 2;  // TODO: check if needed
+                    break;
+                }
+                // 8XY2: set VX to VX AND VY (bitwise AND)
+                case 0x0002:
+                {
+                    printf("Not yet implemented: 0x%X\n", opcode);
+                    pc += 2;  // TODO: check if needed
+                    break;
+                }
+                // 8XY3: set VX to VX XOR VY (bitwise XOR)
+                case 0x0003:
+                {
+                    printf("Not yet implemented: 0x%X\n", opcode);
+                    pc += 2;  // TODO: check if needed
+                    break;
+                }
+                // 8XY4: add VY to VX. VF set to 1 when carrying, otherwise 0
+                case 0x0004:
+                {
+                    printf("Not yet implemented: 0x%X\n", opcode);
+                    pc += 2;  // TODO: check if needed
+                    break;
+                }
+                // 8XY5: subtract VY from VX. VF set to 0 when borrowing, otherwise 0
+                case 0x0005:
+                {
+                    printf("Not yet implemented: 0x%X\n", opcode);
+                    pc += 2;  // TODO: check if needed
+                    break;
+                }
+                // 8XY6: store least-significant bit of VX in VF, then shift VX right by 1
+                case 0x0006:
+                {
+                    printf("Not yet implemented: 0x%X\n", opcode);
+                    pc += 2;  // TODO: check if needed
+                    break;
+                }
+                // 8XY7: set VX to VY minus VX. VF set to 0 when there is a borrow, otherwise 1
+                case 0x0007:
+                {
+                    printf("Not yet implemented: 0x%X\n", opcode);
+                    pc += 2;  // TODO: check if needed
+                    break;
+                }
+                // 8XYE: store most-significant bit of VX in VF, then shift VX left by 1
+                case 0x000E:
+                {
+                    printf("Not yet implemented: 0x%X\n", opcode);
+                    pc += 2;  // TODO: check if needed
+                    break;
+                }
+
+                default:
+                    printf("Unknown opcode: 0x%X\n", opcode);
+            }
+        }
+
+        // 9XY0: skip next instruction if VX != VY
+        case 0x9000:
+        {
+            printf("Not yet implemented: 0x%X\n", opcode);
+            pc += 2;  // TODO: check if needed
+            break;
+        }
+
         // ANNN: set I to address NNN
         case 0xA000:
         {
             I = opcode & 0x0FFF;
             pc += 2;
+            break;
+        }
+
+        // BNNN: jump to address NNN plus V0
+        case 0xB000:
+        {
+            printf("Not yet implemented: 0x%X\n", opcode);
+            pc += 2;  // TODO: check if needed
+            break;
+        }
+
+        // CXNN: set VX to result of bitwise AND operation on random number (0 - 255) and NN
+        case 0xC000:
+        {
+            printf("Not yet implemented: 0x%X\n", opcode);
+            pc += 2;  // TODO: check if needed
             break;
         }
 
@@ -126,12 +279,114 @@ void chip8::emulateCycle()
             break;
         }
 
-        // 6XNN: set VX to NN
-        case 0x6000:
+        case 0xE000:
         {
-            V[(opcode & 0x0F00) >> 8] = opcode & 0x00FF;
-            pc += 2;
-            break;
+            switch(opcode & 0x000F)
+            {
+                // EX9E: skip next instruction if key stored in VX is pressed
+                case 0x000E:
+                {
+                    printf("Not yet implemented: 0x%X\n", opcode);
+                    pc += 2;  // TODO: check if needed
+                    break;
+                }
+                // EXA1: skip next instruction if key stored in VX is not pressed
+                case 0x0001:
+                {
+                    printf("Not yet implemented: 0x%X\n", opcode);
+                    pc += 2;  // TODO: check if needed
+                    break;
+                }
+
+                default:
+                    printf("Unknown opcode: 0x%X\n", opcode);
+            }
+        }
+
+        case 0xF000:
+        {
+            switch(opcode & 0x00FF)
+            {
+                // FX07: set VX to value of delay timer
+                case 0x0007:
+                {
+                    printf("Not yet implemented: 0x%X\n", opcode);
+                    pc += 2;  // TODO: check if needed
+                    break;
+                }
+
+                // FX0A: wait for keypress then store in VX (blocking operation)
+                case 0x000A:
+                {
+                    printf("Not yet implemented: 0x%X\n", opcode);
+                    pc += 2;  // TODO: check if needed
+                    break;
+                }
+
+                // FX15: set delay timer to VX
+                case 0x0015:
+                {
+                    printf("Not yet implemented: 0x%X\n", opcode);
+                    pc += 2;  // TODO: check if needed
+                    break;
+                }
+
+                // FX18: set sound timer to VX
+                case 0x0018:
+                {
+                    printf("Not yet implemented: 0x%X\n", opcode);
+                    pc += 2;  // TODO: check if needed
+                    break;
+                }
+
+                // FX1E: add VX to I. VF is unaffected
+                case 0x001E:
+                {
+                    printf("Not yet implemented: 0x%X\n", opcode);
+                    pc += 2;  // TODO: check if needed
+                    break;
+                }
+
+                // FX29: set I to location of sprite for character in VX. Chars 0 - F represented by 4x5 font
+                case 0x0029:
+                {
+                    printf("Not yet implemented: 0x%X\n", opcode);
+                    pc += 2;  // TODO: check if needed
+                    break;
+                }
+
+                // FX33: Store binary-coded decimal representation of VX:
+                //       with hundreds digit at I,
+                //       tens digit at I+1,
+                //       ones digit at I+2
+                case 0x0033:
+                {
+                    printf("Not yet implemented: 0x%X\n", opcode);
+                    pc += 2;  // TODO: check if needed
+                    break;
+                }
+
+                // FX55: Store V0 to VX (incl. VX) in memory starting at address I.
+                //       Offset from I increased by 1 each time, I left unchanged
+                case 0x0055:
+                {
+                    printf("Not yet implemented: 0x%X\n", opcode);
+                    pc += 2;  // TODO: check if needed
+                    break;
+                }
+
+                // FX65: Fill V0 to VX (incl. VX) with values from memory starting at address I.
+                //       Offset from I increased by 1 each time, I left unchanged
+                case 0x0065:
+                {
+                    printf("Not yet implemented: 0x%X\n", opcode);
+                    pc += 2;  // TODO: check if needed
+                    break;
+                }
+
+                default:
+                    printf("Unknown opcode: 0x%X\n", opcode);
+            }
         }
 
         default:
