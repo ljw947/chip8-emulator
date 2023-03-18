@@ -59,6 +59,8 @@ public:
     void dumpMemory(int startByte, int stopByte);
     // dumps contents of memory to a file
     void dumpMemoryToFile(int startByte, int stopByte);
+    // print contents of gfx (rudimentary print screen)
+    void printScreen();
 
     // the 'official' fontset of chip8
     unsigned char chip8_fontset[80] =

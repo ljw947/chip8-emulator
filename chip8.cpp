@@ -97,10 +97,18 @@ void chip8::emulateCycle()
             {
                 // 0x00E0: clear screen
                 case 0x0000:
+                {
+                    printf("Not yet implemented: 0x%X\n", opcode);
+                    pc += 2;  // TODO: check if needed
                     break;
+                }
                 // 0x00EE: return from subroutine
                 case 0x000E:
+                {
+                    printf("Not yet implemented: 0x%X\n", opcode);
+                    pc += 2;  // TODO: check if needed
                     break;
+                }
                 default:
                     printf("Unknown opcode: 0x%X\n", opcode);
             }
@@ -270,12 +278,28 @@ void chip8::emulateCycle()
         // Pixel set using bitwise XOR - current state compared w/ value in memory, if different 1 else 0
         case 0xD000:
         {
-            int xcoord = (opcode & 0x0F00) >> 8;
-            int ycoord = (opcode & 0x00F0) >> 4;
-            int height = (opcode & 0x000F);
-            printf("x coord: %i, y coord: %i, height: %i\n", xcoord, ycoord, height);
+            unsigned short x = V[(opcode & 0x0F00) >> 8];
+            unsigned short y = V[(opcode & 0x00F0) >> 4];
+            unsigned short height = opcode & 0x000F;
+            unsigned short pixel;
 
+            V[0xF] = 0;  // reset VF
+            for (int yline = 0; yline < height; ++yline)
+            {
+                pixel = memory[I + yline];
+                for (int xline = 0; xline < 8; ++xline)
+                {
+                    if ((pixel & (0x80 >> xline)) != 0)
+                    {
+                        if (gfx[(x + xline + ((y + yline) * 64))] == 1) { V[0xF] = 1; }
+                        gfx[x + xline + ((y + yline) * 64)] ^= 1;
+                    }
+                }
+            }
+            // drawFlag = true;
+            printScreen();
             pc += 2;
+            sleep(1);
             break;
         }
 
@@ -401,7 +425,6 @@ void chip8::emulateCycle()
         --soundTimer;
     }
 
-    sleep(1);
     ++cycleCount;
 }
 
@@ -410,7 +433,6 @@ void chip8::getCurrentState()
     printf("opcode: 0x%X\n", opcode);
     std::cout << "I: " << I << std::endl;
     std::cout << "pc: " << pc << std::endl;
-    std::cout << "gfx: " << gfx << std::endl;
     std::cout << "delayTimer: " << delayTimer << std::endl;
     std::cout << "soundTimer: " << soundTimer << std::endl;
     std::cout << "sp: " << sp << std::endl;
@@ -422,6 +444,48 @@ void chip8::getCurrentState()
     }
 
     for (int i = 0; i < 16; ++i) { std::cout << "stack: " << stack[i] << std::endl; }
+}
+
+void drawHorizontalBorder()
+{
+    std::string horizontalLine = "\u2501";
+    std::string heavyCross = "\u254B";
+    std::string horizontalBorder;
+    horizontalBorder.append(heavyCross);
+    for (int x = 0; x < 66; ++x)  // for padding
+    {
+        horizontalBorder.append(horizontalLine);
+    }
+    horizontalBorder.append(heavyCross);
+    std::cout << horizontalBorder << std::endl;
+}
+
+void chip8::printScreen()
+{
+    int counter = 0;
+    std::string line;
+    std::string block = "\u2588";
+    std::string space = "\u0020";
+    std::string verticalLine = "\u2503";
+    std::cout << std::endl;
+    drawHorizontalBorder();
+    for (int x = 0; x < (64 * 32); ++x)
+    {
+        if (gfx[x] == 0x01)
+            line.append(block);
+        else
+            line.append(space);
+
+        if (counter == 63)  // for x = 64
+        {
+            std::cout << verticalLine << space << line << space << verticalLine << std::endl;
+            line.clear();
+            counter = 0;
+        }
+        else { ++counter; }
+    }
+    drawHorizontalBorder();
+    std::cout << std::endl;
 }
 
 void chip8::dumpMemory(int startByte = 0, int stopByte = 4096)
